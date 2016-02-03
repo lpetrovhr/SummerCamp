@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<div class="container">
+    <div class="col-md-12">
+        <div class="btn-toolbar" role="toolbar">
+            <a href="/korisnik" class="btn btn-info"><i class="fa fa-chevron-left"></i> Nazad</a>
+            <a href="" class="btn btn-info"><i class="fa fa-file-pdf-o"></i> Ispis</a>
+            <a href="/logout" class="btn btn-info"><i class="fa fa-sign-out"></i> Logout</a>
+        </div>
+        <h2><i class="fa fa-graduation-cap"></i> <%= user.ime +' '+ user.prezime %></h2>
+        <div class="col-md-6">
+            <p>Klikom na kolegij vidit ćete popis svih pristupnika programa.</p>
+        </div>
+    </div>
+    <% if(program.length <= 0) { %>
+    <div class="col-md-6">
+        <div class="empty"></div>
+        <p>Nemate niti jedan upisan program</p>
+    </div>
+    <% } else { %>
+    <div class="col-md-12">
+        <div class="empty"></div>
+        <table class="table table-striped">
+            <tr class="danger">
+                <td><b>Naziv</b></td>
+                <td><b>Broj upisanih</b></td>
+                <td><b>Termin</b></td>
+                <td><b>Prostorija</b></td>
+                <td><b>Adresa</b></td>
+            </tr>
+            <% program.forEach(function(program){ %>
+            <tr>
+                <td><a href="" class="myClass" id="<%= program.program_id %>" data-toggle="modal" data-target=".bs-modal-md-program"><%= program.naziv %></a></td>
+                <td><%= program.broj_upisanih %></td>
+                <td><%= program.termin %></td>
+                <td><%= program.prostorije %></td>
+                <td><%= program.adresa %></td>
+            </tr>
+            <% }) %>
+        </table>
+    </div>
+    <% } %>
+</div>
+<div class="modal fade bs-modal-md-program" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa fa-list"></i> Popis pristupnika</h2>
+            </div>
+            <div class="modal-body"  id="getMyClassModal"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+    $('a.myClass').click(function(event){
+    event.preventDefault();
+    var id = $(this).attr('id');
+    console.log(id);
+    $.ajax({
+    url: "/getMyClass",
+    data: {
+    ajaxValue: id
+    },
+    type: "GET",
+    success: function(data){
+    $('#getMyClassModal').empty();
+    console.log(data);
+    $('#getMyClassModal').append(
+    '<table class="table table-striped">'+
+                '<tr class="danger">'+
+                '<td><b>Ime</b></td>'+
+                '<td><b>Prezime</b></td>'
+                '<td><b>Email</b></td>'+
+                '</tr>'+
+        '</table>'
+    );
+    }
+    });
+    });
+    });
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<div class="container">
+    <div class="col-md-12">
+        <div class="btn-toolbar" role="toolbar">
+            <% if(user.email === 'admin@admin.com') { %>
+            <a href="" class="btn btn-info" data-toggle="modal" data-target=".bs-modal-predavac"><i class="fa fa-user-plus"></i> Dodaj predavača</a>
+            <a href="" class="btn btn-info" data-toggle="modal" data-target=".bs-modal-program"><i class="fa fa-plus"></i> Dodaj Program</a>
+            <% } else {%>
+            <a href="/mojiProgrami" class="btn btn-info"><i class="fa fa-list"></i> Moji programi</a>
+            <% } %>
+            <a href="/logout" class="btn btn-info"><i class="fa fa-sign-out"></i> Logout</a>
+        </div>
+        <h2><i class="fa fa-graduation-cap"></i> <%= title %></h2>
+        <div class="col-md-6">
+            <% if(user.nastavnik_id === 1) { %>
+                <p>Kao admin možete dodavati nove korisnike i programe pomoću gornjeg izbornika, listu trenutnih programa i korisnika vidit ćete u listi ispod.</p>
+            <% } else { %>
+                <p><%= user.ime +' '+ user.prezime %>, dobrodošli!</p>
+                <p>U gornjem izborniku naći ćete link na listu svojih kolegija.</p>
+            <% } %>
+        </div>
+        <% include ../views/modal_predavac.ejs %>
+        <% include ../views/modal_program.ejs %>
+    </div>
+
+    <% if(user.nastavnik_id === 1) { %>
+    <div class="col-md-12">
+        <h2>Predavači</h2>
+        <div class="empty"></div>
+        <table class="table table-striped">
+            <tr class="info">
+                <td><b>Ime</b></td>
+                <td><b>Prezime</b></td>
+                <td><b>Email</b></td>
+            </tr>
+            <% predavac.forEach(function(predavac){ %>
+            <tr>
+                <td><%= predavac.ime %></td>
+                <td><%= predavac.prezime %></td>
+                <td><%= predavac.email %></td>
+            </tr>
+            <% })%>
+        </table>
+        <h2>Programi</h2>
+        <div class="empty"></div>
+        <table class="table table-striped">
+            <tr class="danger">
+                <td><b>Naziv</b></td>
+                <td><b>Broj upisanih</b></td>
+                <td><b>Termin</b></td>
+                <td><b>Prostorija</b></td>
+                <td><b>Predavač</b></td>
+            </tr>
+            <% program.forEach(function(program){ %>
+            <tr>
+                <td><a href="" class="editClass" id="<%= program.program_id %>" data-toggle="modal" data-target=".bs-modal-md-program"><%= program.naziv %></a></td>
+                <td><%= program.broj_upisanih%></td>
+                <td><%= program.termin %></td>
+                <td><%= program.prostorije %></td>
+                <td><%= program.ime +' '+ program.prezime %></td>
+            </tr>
+            <% }) %>
+        </table>
+    </div>
+    <% } %>
+</div>
+<div class="modal fade bs-modal-md-program" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa fa-pencil"></i> Uređivanje programa</h2>
+            </div>
+            <div class="modal-body"  id="getMyClassModal"></div>
+    </div>
+    </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('a.editClass').click(function(event){
+                event.preventDefault();
+                var id = $(this).attr('id');
+                console.log(id);
+                $.ajax({
+                    url: "/editClass",
+                    data: {
+                        ajaxValue: id
+                    },
+                    type: "GET",
+                    success: function(data){
+                        $('#editClassModal').empty();
+                        console.log(data);
+                        $('#editClassModal').append('<form action="/editClass/save/'+ data.tecaj[0].program_id +'" method="post">' +
+                        '<div class="form-group">' +
+                            '<label>Naziv</label>' +
+                            '<input type="text" class="form-control" name="program_naziv" value="'+ data.tecaj[0].naziv +'" required>'+
+                        '</div>'+
+                        '<div class="form-group">'+
+                                '<label>Minimalan broj sudionika</label>'+
+                        '<input type="number" class="form-control" name="program_min" value="'+ data.tecaj[0].minimalni_broj +'" required>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                                '<label>Maksimalan broj sudionika</label>' +
+                        '<input type="number" class="form-control" name="program_max" value="'+ data.tecaj[0].maksimalni_broj +'" required>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                                '<label>Termin</label>' +
+                                '<input type="datetime-local" class="form-control" name="program_termin" value="'+ data.tecaj[0].termin +'" required>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                                '<label>Prostorija</label>' +
+                                '<input type="text" class="form-control" name="program_prostorija" value="'+ data.tecaj[0].prostorije +'" required>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                                '<label>Adresa</label>' +
+                                '<input type="text" class="form-control" name="program_add" value="'+ data.tecaj[0].adresa +'" required>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                                '<label>Grad</label>' +
+                                '<select id="gradSelect" class="form-control" name="program_mjesto">' +
+                                '<option selected="selected" value='+ data.tecaj[0].mjesto_id +'>'+ data.tecaj[0].naziv_mjesta +'</option>' +
+                        <% grad.forEach(function(mjesto){ %>
+                        '<option value="<%= mjesto.mjesto_id %>"><%= mjesto.naziv %></option>' +
+                        <% }) %>
+                                '</select>' +
+                        '</div>' +
+                        '<div class="form-group">' +
+                                '<label>Predavač</label>' +
+                                '<select id="predavacSelect" class="form-control" name="program_predavac">' +
+                                '<option selected="selected" value='+ data.tecaj[0].nastavnik_id +'>'+ data.tecaj[0].ime+' '+ data.tecaj[0].prezime +'</option>' +
+                                <% predavac.forEach(function(osoba) { %>
+                                '<option value="<%= osoba.nastavnik_id %>"><%= osoba.ime +' '+osoba.prezime %></option>' +
+                                <% }) %>
+                                '</select>' +
+                                '</div>' +
+                                '<button class="btn btn-default"><i class="fa fa-floppy-o"></i> Spremi</button>' +
+                                '    ' +
+                                '<button class="btn btn-danger"><i class="fa fa-trash"></i> Obriši</button>' +
+                                '</form>'
+                        );
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</body>
+</html>

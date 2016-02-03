@@ -1,0 +1,47 @@
+<div class="modal fade bs-modal-predavac" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa fa-user-plus"></i> Dodaj Predavača</h2>
+            </div>
+            <div class="modal-body">
+                <form action="/dodaj-predavaca" method="post">
+                    <div class="form-group">
+                        <label>Ime</label>
+                        <input type="text" class="form-control" name="predavac_ime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Prezime</label>
+                        <input type="text" class="form-control" name="predavac_prezime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="predavac_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Lozinka</label>
+                        <input type="password" class="form-control" name="predavac_pass" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresa</label>
+                        <input type="text" class="form-control" name="predavac_add" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Grad</label>
+                        <select id="gradSelect" class="form-control" name="predavac_mjesto">
+                            <option selected="selected">Odaberi grad</option>
+                            <% grad.forEach(function(mjesto){ %>
+                            <option value="<%= mjesto.mjesto_id %>"><%= mjesto.naziv %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Datum rođenja</label>
+                        <input type="date" class="form-control" name="predavac_datum" required>
+                    </div>
+                    <button class="btn btn-default"><i class="fa fa-floppy-o"></i> Spremi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

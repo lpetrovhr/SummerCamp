@@ -13,6 +13,7 @@ Things to be done:
 - list of students that are enroled in class when teacher selects that class
 - admin can delete teacher and class
 - fix student view
+- add bcrypt for password(yeah I know this is not good idea, but as I said, this was fast developed and crypting my password is in my mind, so I left that for latter)
 
 One thing to notice here, Croatian language is used in application.
 

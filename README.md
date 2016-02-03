@@ -16,4 +16,4 @@ Things to be done:
 
 One thing to notice here, Croatian language is used in application.
 
-Live long and prosper \\//_
+Live long and prosper  "\"\//_

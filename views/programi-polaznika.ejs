@@ -40,7 +40,7 @@
             <tr>
                 <td><%= program.naziv %></td>
                 <td><%= program.broj_upisanih %></td>
-                <td><%= program.termin %></td>
+                <td><%= moment(program.termin).format('DD.MM.YYYY - HH:mm:ss') %></td>
                 <td><%= program.prostorije %></td>
                 <td><%= program.adresa %></td>
             </tr>

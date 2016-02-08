@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var moment = require('moment');
 
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -67,7 +68,7 @@ module.exports = function(app, passport){
                     console.log(error);
                 }
 
-                res.render('moji-programi', {user: user, title: 'Moji programi', program: rows});
+                res.render('moji-programi', {user: user, title: 'Moji programi', program: rows, moment: moment, message: req.flash('info')});
             });
         });
 
@@ -89,9 +90,7 @@ module.exports = function(app, passport){
                     console.log(error);
                 }
 
-                console.log(rows);
-
-                res.render('programi-polaznika', {user: user, title: 'Moji programi', program: rows})
+                res.render('programi-polaznika', {user: user, title: 'Moji programi', program: rows, moment: moment})
             });
         });
 
@@ -226,15 +225,43 @@ module.exports = function(app, passport){
             var id = req.param('ajaxValue');
             var user = req.user;
 
-            var queryString = "SELECT * FROM program WHERE program_id = ?" +
-                "ORDER by termin asc";
+            var queryString = "SELECT * FROM polaznik_program " +
+                "INNER JOIN polaznik ON polaznik_program.polaznik_id = polaznik.polaznik_id " +
+                "WHERE polaznik_program.program_id = ? " +
+                "ORDER BY polaznik.prezime ASC ";
+
             connection.query(queryString, [id], function(error, row){
                 if(error) {
                     console.log(error);
                 }
-
+                console.log(row);
                 res.send({mojProgram: row});
             });
+        });
+
+    app.route('/getMyClassPDF/:id')
+        .get(function(req, res){
+            var id = req.params.id;
+            console.log(id);
+            var queryString = "SELECT * FROM polaznik_program " +
+                "INNER JOIN polaznik ON polaznik_program.polaznik_id = polaznik.polaznik_id " +
+                "WHERE polaznik_program.program_id = ? " +
+                "ORDER BY polaznik.prezime ASC ";
+
+            connection.query(queryString, [id], function(error, rows){
+                if(error) {
+                    console.log(error);
+                }
+
+                if(rows.length <= 0) {
+                    console.log('This class is empty');
+                    req.flash('info', 'Nema upisanih studenata');
+                    res.redirect('/mojiProgrami');
+                }
+
+
+            });
+
         });
 
     app.route('/logout')
@@ -290,7 +317,7 @@ function renderKorisnik(req, res){
     if(!user.nastavnik_id) {
         res.redirect('/');
     }
-    res.render('korisnik', { title: 'Korisničke stranice', user: user, grad: req.mjesto, predavac: req.nastavnik, program: req.program})
+    res.render('korisnik', { title: 'Korisničke stranice', user: user, grad: req.mjesto, predavac: req.nastavnik, program: req.program, moment: moment})
 };
 
 function getSviProgrami(req, res, next){
@@ -333,5 +360,5 @@ function renderPolaznik(req, res){
     }
     console.log(req.upisaniProgrami);
     console.log(req.sviProgrami);
-    res.render('polaznik', {user: user, title: 'Korisničke stranice', sviProgrami: req.sviProgrami, upisaniProgrami: req.upisaniProgrami, message: req.flash('info')});
+    res.render('polaznik', {user: user, title: 'Korisničke stranice', sviProgrami: req.sviProgrami, upisaniProgrami: req.upisaniProgrami, moment: moment, message: req.flash('info')});
 };

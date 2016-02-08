@@ -39,7 +39,7 @@
             <tr>
                 <td><%= program.naziv %></td>
                 <td><%= program.broj_upisanih %></td>
-                <td><%= program.termin %></td>
+                <td><%= moment(program.termin).format('DD.MM.YYYY - HH:mm:ss') %></td>
                 <td><%= program.prostorije %></td>
                 <td><%= program.ime %>  <%= program.prezime %></td>
                 <td><a href="/classEnrole/<%= program.program_id%>" id="<%= program.program_id %>" title="Upiši se u program" id="enroleButton" class="btn btn-success">Upiši</a></td>
@@ -69,7 +69,7 @@
                 <tr>
                     <td><%= program.naziv %></td>
                     <td><%= program.broj_upisanih %></td>
-                    <td><%= program.termin %></td>
+                    <td><%= moment(program.termin).format('DD.MM.YYYY - HH:mm:ss') %></td>
                     <td><%= program.prostorije %></td>
                     <td><%= program.ime %>  <%= program.prezime %></td>
                     <td><a href="/classUnrole/<%= program.program_id%>" id="<%= program.program_id %>" title="Ispiši se iz programa" id="unroleButton" class="btn btn-danger">Ispiši</a></td>
